@@ -3,7 +3,7 @@
 ## Members
 
 - Member 1
-- Member 2
+- Brian Joseph
 - Member 3
 - Member 4
 
