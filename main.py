@@ -7,10 +7,10 @@ The main game loop.
 import game
 import data
 
-
+""" in data.py pls create a function called create player takes in no arguemnts that returns player object"""
 if __name__ == "__main__":
     mud = game.Game()
-    mud.welcome()
+    mud.introduction()
     player = data.create_player()
     mud.add_player(player)
     while not mud.is_gameover():
