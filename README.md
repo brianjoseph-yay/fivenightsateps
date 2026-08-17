@@ -1,9 +1,8 @@
 # j1-summary-project-2026
 
 ## Members
-
 - Aadi Kainthola
-- Member 2
+- Brian Joseph
 - Member 3
 - Member 4
 
