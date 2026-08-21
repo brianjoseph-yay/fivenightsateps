@@ -6,7 +6,6 @@ class Game:
     def add_player(self, player):
         self.player = player
 
-
     def introduction(self):
         """ NSEW , UD """
         import time
@@ -32,4 +31,8 @@ class Game:
         pass
 
     def epilogue(self):
-        pass
+        """ display game over"""
+        import time
+        print(f" Awwww GAME OVER , better luck next time")
+        time.sleep(2)
+        print(f"better luck next time")
