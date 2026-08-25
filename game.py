@@ -14,6 +14,9 @@ class Game:
     def add_player(self, player):
         self.player = player
 
+    def add_player(self, player):
+        self.player = player
+
     def introduction(self):
         """ NSEW , UD """
         import time
