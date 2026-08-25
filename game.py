@@ -1,6 +1,10 @@
 class Game:
     def __init__(self,name):
+        self.player = None
         self.name = name
+
+    def add_player(self, player):
+        self.player = player
 
     def introduction(self):
         """ NSEW , UD """
@@ -17,50 +21,18 @@ class Game:
     def attack(self):
         pass
 
-    def win(self):
+    def get_options(self):
         pass
 
-    def lose(self):
+    def get_actions(self, choice):
         pass
 
-
-class Player:
-    def __init__(self):
-        self.hp= 20 # pre-set health level
-        self.attack = 2 # bare-handed punch
-        self.money = 0
-        
-    def get_hp(self):
+    def game_over(self):
         pass
 
-
-    def attack(self):
-        pass
-
-    def get_inventory(self):
-        pass
-
-    def insert_inventory(self,item):
-        """ once purchased item from shop , place into inventory (max 5 items) """
-        pass
-
-    def navigation(self,direction):
-        pass
-
-
-    def get_money(self):
-        pass
-
-    def set_money(self,item):
-        pass
-
-
-
-    
-
-
-        
-
-
-
-    
+    def epilogue(self):
+        """ display game over"""
+        import time
+        print(f" Awwww GAME OVER , better luck next time")
+        time.sleep(2)
+        print(f"better luck next time")
