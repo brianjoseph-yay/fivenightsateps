@@ -9,15 +9,17 @@ import data
 
 """ in data.py pls create a function called create player takes in no arguemnts that returns player object"""
 if __name__ == "__main__":
-    mud = game.Game()
-    mud.introduction()
+    gameObj = game.Game()
+    gameObj.introduction()
     player = data.create_player()
-    mud.add_player(player)
-    while not mud.is_gameover():
-        choices = mud.get_options()
+    gameObj.add_player(player)
+
+
+
+    while not gameObj.is_gameover:
+        choices = gameObj.get_options()
         choice = data.prompt_player_choice(choices)
-        actions = mud.get_actions(choice)
-        mud.execute(actions)
-        data.display(mud.status())
+        gameObj.execute(choice)
+        data.display(gameObj.status())
     game.epilogue()
     
