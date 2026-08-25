@@ -42,10 +42,7 @@ class Player:
             return "Inventory full!"
         
         self.inventory.append(item)
-
-    def navigation(self,direction):
-        pass
-
+    """
     def get_money(self):
         return self.money
 
@@ -54,6 +51,7 @@ class Player:
             raise ValueError
         
         self.money += item
+    """
 
 class Item:
     def __init__(self, name, func, count):
