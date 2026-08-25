@@ -1,5 +1,5 @@
 import random
-
+import time
 import data
 
 
@@ -38,15 +38,14 @@ class Game:
                 elif item.name == "oil":
                      if item.usercount > 0:
                           player.gain_hp(item.regeneration)
-                     
-                        
+                                
             else:
                 """ attacking monster bare-handed"""
-                monster.hp -= damage
+                monster.take_damage(damage)
         if is_attacking == "M":
             # damage done by monster is randomised
             damage = random.randint(2,4)
-            player.hp -= damage
+            player.lose_hp(damage)
 
 
     def get_options(self,is_attacking,room:data.room):
@@ -61,33 +60,47 @@ class Game:
             return result
 
 
-    def get_actions(self, choice):
+    def execute(self, choice):
         player = self.player
-        if choice == "Attack":
-            return self.attack()
-        elif choice == "Inventory":
-            return player.get_inventory()
-        elif choice == "Retreat":
-            return player.map.retreat()
-        elif choice == "N":
-            return player.map.forward("north")
-        elif choice == "S":
-                    return player.map.forward("south")
-        elif choice == "E":
-                    return player.map.forward("east")
+        action_map = {
+        "Attack": self.attack,
+        "Inventory": player.get_inventory,
+        "Retreat": player.map.retreat,
+
+        }
+        direction_map = {
+        "N": "north", 
+        "S": "south", 
+        "E": "east", 
+        "W": "west"
+        }
+
+        if choice in action_map:
+            return action_map[choice]
+        # else choice in direction map
+
         else:
-            return player.map.forward("west")
-        
+            if player.map.forward(direction_map[choice]) == "final":
+                self.is_gameover = True
+            else:
+                pass
 
     def epilogue(self):
         """ display game over"""
-        import time
         print(f" Awwww GAME OVER , better luck next time")
         time.sleep(2)
         print(f"better luck next time")
-
-
     
+    def is_this_final(self):
+        """ returs bool to check if current game is final room"""
+        player = self.player
+        return player.map.pointer.is_final == True
+    
+    def status(self):
+        pass
+
+    def display(self):
+        pass
 
 
         
