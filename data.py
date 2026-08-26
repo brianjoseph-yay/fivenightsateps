@@ -47,16 +47,20 @@ class Player:
     def prompt_player_choice(self):
         return input("> ")
 
-    """
     def get_money(self):
         return self.money
 
-    def set_money(self,item):
-        if not isinstance(item, (str, float)):
+    def update_money(self,amount):
+        if not isinstance(amount, (str, float)):
             raise ValueError
-        
-        self.money += item
-    """
+        self.money += amount
+
+    def request_trade(self):
+        trader = Trader()
+        return trader
+
+    def sell(self, item):
+        pass
 
 
 class Item:
@@ -97,6 +101,24 @@ class Monster(Player):
     def get_description(self):
         return self.des
 
+
+#implmentation for neutral trading npc
+
+class Trader:
+    def __init__(self, description):
+        self.shop = []
+        self.description
+    
+    def display_shop(self):
+        return self.shop
+    
+    def get_description(self):
+        return description
+
+    def purchased_item(self, item):
+        if item not in self.shop:
+            raise ValueError("item does not exist in the shop")
+        self.shop.remove(item)
 
 #implmentation for each room
 
@@ -171,13 +193,23 @@ class stack:
         if self.pointer.is_final:
             return "final" # reached final room
 
-        direction = self.retreat_path.pop(-1)
+        direction = self.retreat_path[-1]
         self.pointer = self.pointer.next[direction]
 
         self.retreat_path.append(self.reverse_dict[direction])
         
         return False
 
+    def display_player_route(self):
+        directions = [self.reverse_dict[x] for x in self.retreat_path]
+        current = self.head
+
+        output = [current]
+        for direction in directions[1:]:
+            current = current.next[direction]
+            output.append(current)
+        return output
+            
     def display_visual_map(self, size):
         visual_map = [[[] for _ in range(size)] for _ in range(size)]
         direction_dict = {
@@ -229,6 +261,7 @@ test.push(Room(6, {"north" : None, "east" : None, "south" : None, "west" : None}
 print(test.pointer.contents, test.retreat_path)
 
 print(test.display_visual_map(10))
+print(test.display_player_route())
 
 #implementation for the map
 
