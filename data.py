@@ -1,3 +1,5 @@
+import random
+
 class Player:
     def __init__(self):
         self.hp = 20 # pre-set health level
@@ -31,7 +33,6 @@ class Player:
             raise ValueError
         self.attack += update
         
-
     def get_inventory(self):
         return self.inventory
 
@@ -45,8 +46,6 @@ class Player:
 
     def prompt_player_choice(self):
         return input("> ")
-
-
 
     """
     def get_money(self):
@@ -74,7 +73,6 @@ class Item:
     def update_count(self):
         if count <= 0:
             return False #no more use left
-        
         self.count -= 1
     
     def get_func(self):
@@ -99,12 +97,16 @@ class Monster(Player):
     def get_description(self):
         return self.des
 
+
 class Room:
     def __init__(self, contents, exits, is_final : bool):
         self.contents = contents
         self.exits = exits #dict
         self.next = {"north" : None, "east" : None, "south" : None, "west" : None}
         self.is_final = is_final
+
+    def __repr__(self):
+        return str(self.contents)
     
     def get_exits(self):
         return self.exits
@@ -188,12 +190,86 @@ class stack: #mapping of the rooms on a level
         
         return False
 
+    def display_visual_map(self):
+        visual_map = ""
+        for _ in range(10):
+            for _ in range(10):
+                visual_map += ""
+
 test = stack()
-test.push(Room(1, {"north" : None, "east" : None, "south" : None, "west" : None}, None), "south")
+test.push(Room(1, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "south")
 print(test.pointer.contents, test.retreat_path)
-test.push(Room(2, {"north" : None, "east" : None, "south" : None, "west" : None}, None), "east")
+test.push(Room(2, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "east")
 print(test.pointer.contents, test.retreat_path)
 test.retreat()
 print(test.pointer.contents, test.retreat_path)
 test.forward("east")
 print(test.pointer.contents, test.retreat_path)
+test.push(Room(3, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "north")
+test.push(Room(4, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "north")
+test.push(Room(5, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "west")
+test.push(Room(6, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "west")
+print(test.pointer.contents, test.retreat_path)
+
+
+#implementation for the map
+
+all_rooms, searched = [], set()
+current = test.head
+all_rooms.append(current)
+searched.add(current)
+def mapping(current):
+    global all_rooms, mapping, searched
+    for direction, room in current.next.items():
+        if room is None:
+            continue
+        if room in searched:
+            continue
+
+        all_rooms.append(room)
+        searched.add(room)
+        mapping(room)
+
+mapping(current)
+print(all_rooms)
+
+
+def random_gen(mapping, item):
+    idx = random.randint(0, len(mapping)-1)
+    mapping[idx].contents.append(item)
+
+
+#implmentation for multi-layered mapping
+
+class Layer:
+    def __init__(self):
+        self.levels = []
+        self.pointer = None
+
+    def add_level(self, Map, level : (int, bool)):
+        if not self.levels:
+            self.levels.append(Map)
+            self.pointer = 0
+            return
+
+        if level is None:
+            self.levels.append(Map)
+            return
+        
+        self.levels.insert(level, Map)
+        if level <= self.pointer and level > 0:
+            self.pointer += 1
+
+    def move_up(self):
+        self.pointer += 1
+        if self.pointer >= len(self.levels):
+            raise IndexError("max_storey reached")
+
+        return self.levels[pointer]
+
+    def move_down(self):
+        self.pointer += 1
+        if self.pointer < 0:
+            raise IndexError("min_storey reached")
+
+        return self.levels[pointer]
