@@ -47,16 +47,21 @@ class Player:
     def prompt_player_choice(self):
         return input("> ")
 
-    """
     def get_money(self):
         return self.money
 
-    def set_money(self,item):
-        if not isinstance(item, (str, float)):
+    def update_money(self,amount):
+        if not isinstance(amount, (str, float)):
             raise ValueError
-        
-        self.money += item
-    """
+        self.money += amount
+
+    def request_trade(self):
+        trader = Trader()
+        return trader
+
+    def sell(self, item):
+        pass
+
 
 class Item:
     def __init__(self, name, func, count):
@@ -77,7 +82,6 @@ class Item:
     
     def get_func(self):
         self.update_count()
-
         return self.func
 
 
@@ -97,6 +101,26 @@ class Monster(Player):
     def get_description(self):
         return self.des
 
+
+#implmentation for neutral trading npc
+
+class Trader:
+    def __init__(self, description):
+        self.shop = []
+        self.description
+    
+    def display_shop(self):
+        return self.shop
+    
+    def get_description(self):
+        return description
+
+    def purchased_item(self, item):
+        if item not in self.shop:
+            raise ValueError("item does not exist in the shop")
+        self.shop.remove(item)
+
+#implmentation for each room
 
 class Room:
     def __init__(self, contents, exits, is_final : bool):
@@ -118,24 +142,25 @@ class Room:
         return self.is_final
 
 
-class stack: #mapping of the rooms on a level
+#mapping of the rooms on a level
+
+
+class stack:
     def __init__(self):
         self.head = None
         self.pointer = None
         self.retreat_path = []
+        self.reverse_dict = {
+        "north" : "south",
+        "south" : "north",
+        "west" : "east",
+        "east" : "west"}
 
     def push(self, room, direction):
         if room.is_final:
             return "final" # reached final room
 
-        if direction == "north":
-            self.retreat_path.append("south")
-        elif direction == "south":
-            self.retreat_path.append("north")
-        elif direction == "east":
-            self.retreat_path.append("west")
-        elif direction == "west":
-            self.retreat_path.append("east")
+        self.retreat_path.append(self.reverse_dict[direction])
 
         if self.head is None:
             self.head = room
@@ -153,14 +178,7 @@ class stack: #mapping of the rooms on a level
         if current.next[direction] is not None:
             self.pointer = current.next[direction]
 
-            if direction == "north":
-                self.retreat_path.append("south")
-            elif direction == "south":
-                self.retreat_path.append("north")
-            elif direction == "east":
-                self.retreat_path.append("west")
-            elif direction == "west":
-                self.retreat_path.append("east")
+            self.retreat_path.append(self.reverse_dict[direction])
 
             if self.pointer.is_final:
                 return "final" # reached final room
@@ -175,28 +193,59 @@ class stack: #mapping of the rooms on a level
         if self.pointer.is_final:
             return "final" # reached final room
 
-        retreat_direction = self.retreat_path.pop(-1)
-        self.pointer = self.pointer.next[retreat_direction]
+        direction = self.retreat_path[-1]
+        self.pointer = self.pointer.next[direction]
 
-        direction = retreat_direction
-        if direction == "north":
-            self.retreat_path.append("south")
-        elif direction == "south":
-            self.retreat_path.append("north")
-        elif direction == "east":
-            self.retreat_path.append("west")
-        elif direction == "west":
-            self.retreat_path.append("east")
+        self.retreat_path.append(self.reverse_dict[direction])
         
         return False
 
-    def display_visual_map(self):
-        visual_map = ""
-        for _ in range(10):
-            for _ in range(10):
-                visual_map += ""
+    def display_player_route(self):
+        directions = [self.reverse_dict[x] for x in self.retreat_path]
+        current = self.head
+
+        output = [current]
+        for direction in directions[1:]:
+            current = current.next[direction]
+            output.append(current)
+        return output
+            
+    def display_visual_map(self, size):
+        visual_map = [[[] for _ in range(size)] for _ in range(size)]
+        direction_dict = {
+            "north" : (1,0),
+            "south" : (-1,0),
+            "east" : (0, 1),
+            "west" : (0,-1)
+        }
+        
+        c_idx = size // 2
+        current = self.head
+        visual_map[c_idx][c_idx] = current
+        searched = set()
+        searched.add(current)
+        def BFS(current, x, y):
+            nonlocal searched, visual_map
+            for direction, room in current.next.items():
+                if room is None:
+                    continue
+                if room in searched:
+                    continue
+                x_shift, y_shift = direction_dict[direction]
+                x += x_shift
+                y += y_shift
+                visual_map[x][y] = room
+                searched.add(room)
+                BFS(room, x, y)
+        BFS(current, c_idx, c_idx)
+
+        return visual_map
+
+            
+
 
 test = stack()
+
 test.push(Room(1, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "south")
 print(test.pointer.contents, test.retreat_path)
 test.push(Room(2, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "east")
@@ -211,6 +260,8 @@ test.push(Room(5, {"north" : None, "east" : None, "south" : None, "west" : None}
 test.push(Room(6, {"north" : None, "east" : None, "south" : None, "west" : None}, False), "west")
 print(test.pointer.contents, test.retreat_path)
 
+print(test.display_visual_map(10))
+print(test.display_player_route())
 
 #implementation for the map
 
